@@ -1,0 +1,71 @@
+.announcementBar{
+    -fx-text-fill: #FFFFFF;
+    -fx-height: 50px;
+    -fx-background-color: #53565C;
+    -fx-padding: 20px;
+    -fx-alignment: center;
+    -fx-font-size: 15px;
+}
+.mainContent{
+}
+#menuList:{
+    -fx-cell-faint-focus-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-cell-focus-color: transparent;
+    -fx-cell-focus-border-color: transparent;
+    -fx-pref-width: 120px;
+    -fx-max-width: 100px;
+}
+#menuList:selected{
+    -fx-cell-faint-focus-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-cell-focus-color: transparent;
+    -fx-cell-focus-border-color: transparent;
+    -fx-pref-width: 100px;
+}
+#menuList:focused{
+    -fx-cell-faint-focus-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-cell-focus-color: transparent;
+    -fx-cell-focus-border-color: transparent;
+    -fx-pref-width: 100px;
+}
+#styleList:focused{
+    -fx-cell-faint-focus-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-cell-focus-color: transparent;
+    -fx-cell-focus-border-color: transparent;
+    -fx-pref-width: 200px;
+}
+#styleList:selected{
+    -fx-cell-faint-focus-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-cell-focus-color: transparent;
+    -fx-cell-focus-border-color: transparent;
+    -fx-pref-width: 200px;
+}
+#styleList{
+    -fx-cell-faint-focus-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-cell-focus-border-color: transparent;
+    -fx-pref-width: 200px;
+}
+#functionArea{
+    -fx-background-color:#F1F3F4;
+}
+#styleAndButton{
+    -fx-padding: 20px 60px;
+}
+#styleListTitle{
+    -fx-font-size: 20px;
+}
+#stylesContainer label{
+    -fx-font-size: 15px;
+    -fx-alignment: center-left;
+}

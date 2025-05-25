@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<styles>
+    <style id="2">
+        <name>heading2</name>
+        <type>段落</type>
+        <color>#FFFFFF</color>
+        <fontSize>20</fontSize>
+    </style>
+</styles>
