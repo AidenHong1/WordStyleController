@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.ListView?>
+
+<?import javafx.scene.layout.VBox?>
+<AnchorPane stylesheets="@style.css" xmlns="http://javafx.com/javafx/17.0.6" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ind.word_style_controller.HelloController">
+  <Label AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" styleClass="announcementBar" text="Welcome to word style controller!" />
+  <AnchorPane styleClass="mainContent" AnchorPane.topAnchor="60" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+    <ListView fx:id="menuList" AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0"/>
+    <AnchorPane fx:id="functionArea" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="100">
+      <VBox fx:id="styleAndButton"   AnchorPane.leftAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" alignment="CENTER" spacing="20">
+        <VBox alignment="CENTER" spacing="10">
+          <Label fx:id="styleListTitle" text="Style List"/>
+          <ListView fx:id="styleList" prefWidth="200"/>
+       </VBox>
+<!--        onAction实际上就是调用的对应controller中的函数-->
+      <Button fx:id="injectToDocx" text="Start to inject styles!" onAction="#injectToDocx" />
+      </VBox>
+    </AnchorPane>
+<!--    <Label fx:id="welcomeText" />-->
+<!--    <Button onAction="#onHelloButtonClick" text="Hello!" />-->
+  </AnchorPane>
+</AnchorPane>
