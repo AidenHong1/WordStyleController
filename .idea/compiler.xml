@@ -6,10 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="word_style_controller" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="word_style_controller" target="17" />
-    </bytecodeTargetLevel>
   </component>
 </project>
