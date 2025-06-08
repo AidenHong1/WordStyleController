@@ -1,55 +1,124 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
-<?import javafx.geometry.Insets?>
 
 <BorderPane xmlns="http://javafx.com/javafx/11"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.ind.word_style_controller.CustomizeController"
-      prefWidth="650" prefHeight="500"
-      minWidth="600" minHeight="400">
+      prefWidth="800" prefHeight="600"
+      minWidth="700" minHeight="500"
+      stylesheets="@style.css">
       
     <padding>
-        <Insets top="15" right="15" bottom="15" left="15"/>
+        <Insets top="20" right="20" bottom="20" left="20"/>
     </padding>
     
+    <!-- 顶部标题和工具栏 -->
     <top>
-        <VBox spacing="10">
-            <Label text="样式配置" style="-fx-font-weight: bold; -fx-font-size: 16;"/>
-            <Separator/>
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <Button text="添加新样式"
+        <VBox spacing="20">
+            <!-- 页面标题 -->
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <Label text="样式配置管理" styleClass="title-label">
+                    <font>
+                        <Font name="Microsoft YaHei" size="28.0" />
+                    </font>
+                </Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="configStatusLabel" text="配置就绪" styleClass="label">
+                    <font>
+                        <Font name="Microsoft YaHei" size="14.0" />
+                    </font>
+                </Label>
+            </HBox>
+            
+            <Separator />
+            
+            <!-- 工具栏 -->
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <Button text="+ 添加新样式"
                     onAction="#handleAddStyle"
-                    style="-fx-background-color: #4CAF50; -fx-text-fill: white;"/>
-                <Label text="添加自定义样式，设置ID将从100开始自动递增" style="-fx-font-style: italic;"/>
+                    styleClass="button success">
+                    <font>
+                        <Font name="Microsoft YaHei" size="14.0" />
+                    </font>
+                    <padding>
+                        <Insets top="10" right="20" bottom="10" left="20" />
+                    </padding>
+                </Button>
             </HBox>
         </VBox>
     </top>
     
+    <!-- 主要内容区域 -->
     <center>
-        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: transparent;">
-            <VBox>
-                <TitledPane text="样式列表" expanded="true" collapsible="false">
-                    <VBox fx:id="stylesContainer" spacing="10" style="-fx-padding: 10;">
-                        <padding>
-                            <Insets top="5" right="5" bottom="5" left="5"/>
-                        </padding>
-                    </VBox>
-                </TitledPane>
-            </VBox>
-        </ScrollPane>
+        <VBox spacing="15">
+            
+            <!-- 样式列表容器 -->
+            <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS">
+                    <TitledPane text="样式配置列表" expanded="true" collapsible="false">
+                        <graphic>
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="样式配置列表">
+                                    <font>
+                                        <Font name="Microsoft YaHei" size="16.0" />
+                                    </font>
+                                </Label>
+                                <Label fx:id="styleListCountLabel" styleClass="label">
+                                    <font>
+                                        <Font name="Microsoft YaHei" size="12.0" />
+                                    </font>
+                                </Label>
+                            </HBox>
+                        </graphic>
+                        
+                        <VBox fx:id="stylesContainer" spacing="30">
+                            <padding>
+                                <Insets top="15" right="15" bottom="15" left="15"/>
+                            </padding>
+                        </VBox>
+                    </TitledPane>
+            </ScrollPane>
+        </VBox>
     </center>
     
+    <!-- 底部操作区域 -->
     <bottom>
-        <VBox spacing="10">
+        <VBox spacing="15">
             <Separator/>
-            <HBox alignment="CENTER_RIGHT">
-                <Button text="追加到XML文件末尾"
-                    onAction="#handleAppendStyles"
-                    style="-fx-background-color: #2196F3; -fx-text-fill: white;"
-                    prefWidth="150"/>
+            
+            <!-- 操作按钮和状态信息 -->
+            <HBox alignment="CENTER_LEFT" spacing="15">
+                <!-- 左侧状态信息 -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="状态:" styleClass="label">
+                        <font>
+                            <Font name="Microsoft YaHei" size="12.0" />
+                        </font>
+                    </Label>
+                    <Label fx:id="operationStatusLabel" text="就绪" styleClass="label">
+                        <font>
+                            <Font name="Microsoft YaHei" size="12.0" />
+                        </font>
+                    </Label>
+                </HBox>
+                
+                <Region HBox.hgrow="ALWAYS" />
+                
+                <!-- 右侧操作按钮 -->
+                <HBox alignment="CENTER_RIGHT" spacing="12">
+                    <Button text="应用到XML文件"
+                        onAction="#handleAppendStyles"
+                        styleClass="button success">
+                        <font>
+                            <Font name="Microsoft YaHei" size="14.0" />
+                        </font>
+                        <padding>
+                            <Insets top="12" right="25" bottom="12" left="25" />
+                        </padding>
+                    </Button>
+                </HBox>
             </HBox>
         </VBox>
     </bottom>

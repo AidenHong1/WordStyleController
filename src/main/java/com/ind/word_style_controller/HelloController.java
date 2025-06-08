@@ -1,17 +1,22 @@
 package com.ind.word_style_controller;
 
+import com.ind.StyleModel;
+import com.ind.word_style_controller.utils.CommonUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
+import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.application.Platform;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
+import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTFont;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFonts;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
 import org.w3c.dom.Document;
@@ -20,35 +25,290 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
-import org.apache.poi.xwpf.usermodel.XWPFStyle;
-import org.apache.poi.xwpf.usermodel.XWPFStyles;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.file.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.beans.property.SimpleStringProperty;
 
 public class HelloController {
     @FXML
     public ListView<String> menuList;
-    public ListView<String> styleList;
     public Button injectToDocx;
     private ExecutorService executorService;
+    // TableView 相关
+    @FXML
+    private TableView<StyleModel> styleTable;
+    @FXML
+    private TableColumn<StyleModel, String> valColumn;
+    @FXML
+    private TableColumn<StyleModel, String> fontColumn;
+    @FXML
+    private TableColumn<StyleModel, String> typeColumn;
+    @FXML
+    private TableColumn<StyleModel, String> colorColumn;
+    @FXML
+    private TableColumn<StyleModel, String> fontSizeColumn;
+    @FXML
+    private TableColumn<StyleModel, Double> paragraphSpacingColumn;
+    @FXML
+    private TableColumn<StyleModel, Double> lineSpacingColumn;
+    @FXML
+    private TableColumn<StyleModel, Double> paragraphBeforeSpacingColumn;
+    private final ObservableList<StyleModel> styleData = FXCollections.observableArrayList();
+
     public void initialize() {
         menuList.getItems().addAll("Customize", "Import", "About");
         menuList.setOnMouseClicked(event -> {
             String selectedItem = menuList.getSelectionModel().getSelectedItem();
             if ("Customize".equals(selectedItem)) {
                 switchToCustomizeForm();
+            } else if ("Import".equals(selectedItem)) {
+                switchToImportForm();
             }
         });
         initializeFileWatcher();
+        // TableView 列绑定
+        valColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        fontColumn.setCellValueFactory(new PropertyValueFactory<>("font"));
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        colorColumn.setCellValueFactory(new PropertyValueFactory<>("color"));
+        
+        // 为字体大小列使用自定义的CellValueFactory处理类型转换
+        fontSizeColumn.setCellValueFactory(cellData -> {
+            int fontSize = cellData.getValue().getFontSize();
+            return new SimpleStringProperty(String.valueOf(fontSize));
+        });
+        
+        // 为字体大小列添加单位
+        fontSizeColumn.setCellFactory(column -> new TableCell<StyleModel, String>() {
+            @Override
+            protected void updateItem(String fontSize, boolean empty) {
+                super.updateItem(fontSize, empty);
+                if (empty || fontSize == null) {
+                    setText(null);
+                } else {
+                    setText(fontSize + " pt");
+                }
+            }
+        });
+        
+        // 为段落前间距列使用自定义的CellValueFactory和CellFactory
+        paragraphBeforeSpacingColumn.setCellValueFactory(new PropertyValueFactory<>("paragraphBeforeSpacing"));
+        paragraphBeforeSpacingColumn.setCellFactory(column -> new TableCell<StyleModel, Double>() {
+            @Override
+            protected void updateItem(Double spacing, boolean empty) {
+                super.updateItem(spacing, empty);
+                if (empty || spacing == null) {
+                    setText(null);
+                } else {
+                    setText(String.format("%.1f pt", spacing));
+                }
+            }
+        });
+        
+        // 为段落后间距列使用自定义的CellValueFactory和CellFactory
+        paragraphSpacingColumn.setCellValueFactory(new PropertyValueFactory<>("paragraphSpacing"));
+        paragraphSpacingColumn.setCellFactory(column -> new TableCell<StyleModel, Double>() {
+            @Override
+            protected void updateItem(Double spacing, boolean empty) {
+                super.updateItem(spacing, empty);
+                if (empty || spacing == null) {
+                    setText(null);
+                } else {
+                    setText(String.format("%.1f pt", spacing));
+                }
+            }
+        });
+        
+        // 为行间距列使用自定义的CellValueFactory和CellFactory
+        lineSpacingColumn.setCellValueFactory(new PropertyValueFactory<>("lineSpacing"));
+        lineSpacingColumn.setCellFactory(column -> new TableCell<StyleModel, Double>() {
+            @Override
+            protected void updateItem(Double spacing, boolean empty) {
+                super.updateItem(spacing, empty);
+                if (empty || spacing == null) {
+                    setText(null);
+                } else {
+                    setText(String.format("%.2f 倍", spacing));
+                }
+            }
+        });
+        
+        colorColumn.setCellFactory(column -> new TableCell<StyleModel, String>() {
+            @Override
+            protected void updateItem(String color, boolean empty) {
+                super.updateItem(color, empty);
+                if (empty || color == null) {
+                    setText(null);
+                } else {
+                    setText(color);
+                }
+            }
+        });
+    
+        styleTable.setItems(styleData);
         loadStylesFromXml();
-        styleList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        styleTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        
+        // 设置表格列的相对宽度百分比
+        styleTable.widthProperty().addListener((obs, oldVal, newVal) -> {
+            double width = newVal.doubleValue();
+            // 设置各列的相对宽度百分比
+            valColumn.setPrefWidth(width * 0.15);          // 12%
+            fontColumn.setPrefWidth(width * 0.20);         // 25% - 最宽
+            typeColumn.setPrefWidth(width * 0.15);         // 10%
+            colorColumn.setPrefWidth(width * 0.10);        // 6% - 最窄
+            fontSizeColumn.setPrefWidth(width * 0.10);     // 12%
+            paragraphBeforeSpacingColumn.setPrefWidth(width * 0.10); // 11%
+            paragraphSpacingColumn.setPrefWidth(width * 0.10);      // 11%
+            lineSpacingColumn.setPrefWidth(width * 0.10);           // 11%
+        });
+    }
+
+    private void loadStylesFromXml() {
+        try {
+            styleData.clear();
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("styles.xml");
+            if (inputStream == null) {
+                throw new IOException("styles.xml not found in classpath");
+            }
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(inputStream);
+            doc.getDocumentElement().normalize();
+            NodeList styleNodes = doc.getElementsByTagName("xml-fragment");
+            for (int i = 0; i < styleNodes.getLength(); i++) {
+                Node styleNode = styleNodes.item(i);
+                if (styleNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element styleElement = (Element) styleNode;
+                    
+                    // 获取样式类型
+                    String type = styleElement.getAttribute("w:type");
+                    
+                    // 获取样式名称
+                    NodeList nameNodes = styleElement.getElementsByTagName("w:name");
+                    String styleName = "";
+                    if (nameNodes.getLength() > 0) {
+                        Element nameElement = (Element) nameNodes.item(0);
+                        styleName = nameElement.getAttribute("w:val");
+                    }
+                    // 获取样式ID
+                    NodeList IdNodes = styleElement.getElementsByTagName("w:link");
+                    String styleId = "";
+                    if (IdNodes.getLength() > 0) {
+                        Element nameElement = (Element) IdNodes.item(0);
+                        styleId = nameElement.getAttribute("w:val");
+                    }else{
+                        styleId = styleName;
+                    }
+                    
+                    // 获取中英文字体信息
+                    String englishFont = "黑体"; // 默认英文字体为黑体
+                    String chineseFont = "黑体"; // 默认中文字体为黑体
+                    String font = "黑体"; // 默认字体为黑体
+                    
+                    NodeList rFontsNodes = styleElement.getElementsByTagName("w:rFonts");
+                    if (rFontsNodes.getLength() > 0) {
+                        Element rFontsElement = (Element) rFontsNodes.item(0);
+                        // 获取英文字体 (ascii 或 hAnsi)
+                        String asciiFont = rFontsElement.getAttribute("w:ascii");
+                        String hAnsiFont = rFontsElement.getAttribute("w:hAnsi");
+                        if (!asciiFont.isEmpty()) {
+                            englishFont = asciiFont;
+                        } else if (!hAnsiFont.isEmpty()) {
+                            englishFont = hAnsiFont;
+                        }
+                        
+                        // 获取中文字体 (eastAsia)
+                        String eastAsiaFont = rFontsElement.getAttribute("w:eastAsia");
+                        if (!eastAsiaFont.isEmpty()) {
+                            chineseFont = eastAsiaFont;
+                        }
+                        
+                        // 组合中英文字体
+                        if (englishFont.equals(chineseFont)) {
+                            font = englishFont;
+                        } else {
+                            font = chineseFont + " / " + englishFont;
+                        }
+                    }
+                    
+                    
+                    // 获取颜色信息
+                    String color = "#000000"; // 默认黑色
+                    NodeList colorNodes = styleElement.getElementsByTagName("w:color");
+                    if (colorNodes.getLength() > 0) {
+                        Element colorElement = (Element) colorNodes.item(0);
+                        String colorVal = colorElement.getAttribute("w:val");
+                        if (!colorVal.isEmpty()) {
+                            color = "#" + colorVal;
+                        }
+                    }
+                    
+                    // 获取字体大小
+                    int fontSize = 12; // 默认字体大小
+                    NodeList szNodes = styleElement.getElementsByTagName("w:sz");
+                    if (szNodes.getLength() > 0) {
+                        Element szElement = (Element) szNodes.item(0);
+                        String szVal = szElement.getAttribute("w:val");
+                        if (!szVal.isEmpty()) {
+                            fontSize = Integer.parseInt(szVal) / 2; // Word中字号是实际大小的两倍
+                        }
+                    }
+                    
+                    // 获取段落间距（前后）
+                    double paragraphSpacing = 0.0; // 段落后间距
+                    double paragraphBeforeSpacing = 0.0; // 段落前间距
+                    NodeList spacingNodes = styleElement.getElementsByTagName("w:spacing");
+                    if (spacingNodes.getLength() > 0) {
+                        Element spacingElement = (Element) spacingNodes.item(0);
+                        String afterVal = spacingElement.getAttribute("w:after");
+                        String beforeVal = spacingElement.getAttribute("w:before");
+                        if (!afterVal.isEmpty()) {
+                            paragraphSpacing = Double.parseDouble(afterVal) / 20.0; // 转换为磅值
+                        }
+                        if (!beforeVal.isEmpty()) {
+                            paragraphBeforeSpacing = Double.parseDouble(beforeVal) / 20.0; // 转换为磅值
+                        }
+                    }
+                    
+                    // 获取行间距
+                    double lineSpacing = 1.0; // 默认单倍行距
+                    if (spacingNodes.getLength() > 0) {
+                        Element spacingElement = (Element) spacingNodes.item(0);
+                        String lineVal = spacingElement.getAttribute("w:line");
+                        String lineRule = spacingElement.getAttribute("w:lineRule");
+                        if (!lineVal.isEmpty()) {
+                            if ("auto".equals(lineRule)) {
+                                lineSpacing = Double.parseDouble(lineVal) / 240.0; // 自动行距转换
+                            } else {
+                                lineSpacing = Double.parseDouble(lineVal) / 20.0; // 固定行距转换为磅值
+                            }
+                        }
+                    }
+                    
+                    // 添加到样式数据中
+                    styleData.add(new StyleModel(styleId, styleName, font, type, color, fontSize, paragraphSpacing, lineSpacing, paragraphBeforeSpacing));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Failed to load styles.xml: " + e.getMessage());
+        }
     }
     private void initializeFileWatcher() {
 
@@ -90,41 +350,6 @@ public class HelloController {
             }
         });
     }
-    private void loadStylesFromXml() {
-        try {
-            styleList.getItems().clear();
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("styles.xml");
-            if (inputStream == null) {
-                throw new IOException("styles.xml not found in classpath");
-            }
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(inputStream);
-            doc.getDocumentElement().normalize();
-
-            NodeList styleNodes = doc.getElementsByTagName("style");
-            for (int i = 0; i < styleNodes.getLength(); i++) {
-                Node styleNode = styleNodes.item(i);
-                if (styleNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element styleElement = (Element) styleNode;
-                    String id = styleElement.getAttribute("id");
-                    String name = styleElement.getElementsByTagName("name").item(0).getTextContent();
-                    String type = styleElement.getElementsByTagName("type").item(0).getTextContent();
-                    String color = styleElement.getElementsByTagName("color").item(0).getTextContent();
-                    String fontSize = styleElement.getElementsByTagName("fontSize").item(0).getTextContent();
-                    // 将样式信息格式化为字符串
-                    String styleInfo = String.format("ID: %s, Name: %s, Type: %s, Color: %s, Font Size: %s",
-                            id, name, type, color, fontSize);
-
-                    // 添加到 styleList
-                    styleList.getItems().add(styleInfo);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Failed to load styles.xml");
-        }
-    }
     private void switchToCustomizeForm() {
         try {
             // 加载 customize-form 的 FXML 文件
@@ -141,6 +366,23 @@ public class HelloController {
             System.err.println("Failed to load customize_form.fxml");
         }
     }
+    
+    private void switchToImportForm() {
+        try {
+            // 加载 ImportStyle 的 FXML 文件
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("ImportStyle.fxml"));
+            Stage stage = new Stage();
+            // 设置新的场景
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Import Styles from DOCX");
+            stage.setScene(new Scene(fxmlLoader.load(), 800, 600));
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("Failed to load ImportStyle.fxml");
+        }
+    }
+    
     @FXML
     private void injectToDocx() {
         // 打开文件选择对话框，让用户选择目标 .docx 文件
@@ -161,64 +403,120 @@ public class HelloController {
      */
     private void applyStylesToWord(String filePath) {
         try {
-            // 加载现有的 Word 文档
-            XWPFDocument document = new XWPFDocument(new FileInputStream(filePath));
-
-            // 获取选中的样式信息
-            List<String> selectedStyles = styleList.getSelectionModel().getSelectedItems();
-            for (String styleInfo : selectedStyles) {
-                String[] parts = styleInfo.split(", ");
-                String id = parts[0].split(": ")[1];
-                String name = parts[1].split(": ")[1];
-                String type = parts[2].split(": ")[1];
-                String color = parts[3].split(": ")[1];
-                String fontSize = parts[4].split(": ")[1];
-
-                // 创建一个新的样式
-                XWPFStyle style = new XWPFStyle(CTStyle.Factory.newInstance());
-                // 设置样式属性
-                CTStyle ctStyle = style.getCTStyle();
-                style.setStyleId(id);
-                style.setType(STStyleType.PARAGRAPH);
-                ctStyle.addNewBasedOn().setVal("Normal");
-
-                // 设置字体
-                ctStyle.addNewRPr().addNewRFonts().setAscii(name);
-                ctStyle.getRPr().addNewSz().setVal(new BigInteger(fontSize));
-                ctStyle.getRPr().addNewSzCs().setVal(new BigInteger(fontSize));
-
-                String correctedColor = "FF" + color.replace("#", "").toUpperCase(); // 添加透明度并转换为大写
-                ctStyle.getRPr().addNewColor().setVal(correctedColor);
-
-                // 将样式添加到文档中
-                document.getStyles().addStyle(style);
-                
-                // 创建一个示例段落并应用样式
-                XWPFParagraph paragraph = document.createParagraph();
-                paragraph.setStyle(id);
-                XWPFRun run = paragraph.createRun();
-                run.setText("样式示例: " + name + " (ID: " + id + ")");
+            // 获取选中的样式
+            ObservableList<StyleModel> selectedStyles = styleTable.getSelectionModel().getSelectedItems();
+            if (selectedStyles.isEmpty()) {
+                CommonUtils.showAlert("警告", "请先选择要应用的样式！", Alert.AlertType.WARNING);
+                return;
             }
 
-            // 保存修改后的文档
-            try (FileOutputStream out = new FileOutputStream(filePath)) {
-                document.write(out);
+            // 加载目标文档
+            File file = new File(filePath);
+            FileInputStream fis = new FileInputStream(file);
+            XWPFDocument document = new XWPFDocument(fis);
+            fis.close();
+
+            // 加载styles.xml文件以获取原始XML片段
+            InputStream stylesStream = getClass().getClassLoader().getResourceAsStream("styles.xml");
+            if (stylesStream == null) {
+                throw new IOException("styles.xml not found in classpath");
+            }
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document stylesDoc = dBuilder.parse(stylesStream);
+            stylesDoc.getDocumentElement().normalize();
+            stylesStream.close();
+
+            // 获取所有xml-fragment节点
+            NodeList styleNodes = stylesDoc.getElementsByTagName("xml-fragment");
+            Map<String, Node> styleNodeMap = new HashMap<>();
+            
+            // 创建样式ID到节点的映射
+            for (int i = 0; i < styleNodes.getLength(); i++) {
+                Node node = styleNodes.item(i);
+                Element element = (Element) node;
+                NodeList styleIdNodes = element.getElementsByTagName("w:link");
+                if (styleIdNodes.getLength() > 0) {
+                    String styleId = styleIdNodes.item(0).getAttributes().getNamedItem("w:val").getNodeValue();
+                    styleNodeMap.put(styleId, node);
+                }
             }
 
+            for (StyleModel styleModel : selectedStyles) {
+                try {
+                    // 创建新的样式
+                    XWPFStyle style = new XWPFStyle(CTStyle.Factory.newInstance());
+                    CTStyle ctStyle = style.getCTStyle();
+                    
+                    // 设置样式属性
+                    String newStyleId = "Custom" + UUID.randomUUID().toString().substring(0, 8);
+                    style.setStyleId(newStyleId);
+                    style.setType(STStyleType.Enum.forString(styleModel.type()));
+                    ctStyle.addNewName().setVal(styleModel.name());
+                    ctStyle.addNewQFormat();
+                    
+                    // 配置字体属性
+                    CTRPr rpr = ctStyle.addNewRPr();
+                    // 设置字体
+                    String fontValue = styleModel.font();
+                    String englishFont = "黑体";
+                    String chineseFont = "黑体";
+                    
+                    // 解析组合的字体字符串
+                    if (fontValue.contains("/")) {
+                        String[] fonts = fontValue.split("/");
+                        if (fonts.length >= 2) {
+                            chineseFont = fonts[0].trim();
+                            englishFont = fonts[1].trim();
+                        }
+                    } else {
+                        // 如果只有一个字体，则中英文使用相同字体
+                        englishFont = fontValue;
+                        chineseFont = fontValue;
+                    }
+                    
+                    // 设置各种字体属性
+                    CTFonts rFonts = rpr.addNewRFonts();
+                    rFonts.setAscii(englishFont);
+                    rFonts.setHAnsi(englishFont);
+                    rFonts.setCs(englishFont);
+                    rFonts.setEastAsia(chineseFont);
+                    rpr.addNewSz().setVal(BigInteger.valueOf(styleModel.fontSize() * 2));
+                    
+                    // 处理颜色
+                    String color = styleModel.color();
+                    String correctedColor = color.startsWith("#") ? color.substring(1) : color;
+                    rpr.addNewColor().setVal(correctedColor.toUpperCase());
+                    
+                    // 添加样式到文档
+                    document.getStyles().addStyle(style);
+                    
+                    // 创建应用样式的段落
+                    XWPFParagraph paragraph = document.createParagraph();
+                    paragraph.setStyle(newStyleId);
+                    XWPFRun run = paragraph.createRun();
+                    run.setText("样式示例 (备用方法): " + styleModel.name());
+                    
+                } catch (Exception ex) {
+                    System.err.println("备用方法也失败: " + ex.getMessage());
+                }
+            }
+
+            // 保存文档
+            FileOutputStream fos = new FileOutputStream(file);
+            document.write(fos);
+            fos.close();
             document.close();
 
-            // 使用默认程序打开修改后的文档
-            Desktop.getDesktop().open(new File(filePath));
+            // 打开文档
+            Desktop.getDesktop().open(file);
+
+            // 显示成功消息
+            CommonUtils.showAlert("成功", "成功应用样式到文档！");
+
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Failed to apply styles to the Word document");
+            CommonUtils.showAlert("错误", "应用样式时出错: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
-//    @FXML
-//    private Label welcomeText;
-//
-//    @FXML
-//    protected void onHelloButtonClick() {
-//        welcomeText.setText("Welcome to JavaFX Application!");
-//
 }

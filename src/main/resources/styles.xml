@@ -1,9 +1,266 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <styles>
-    <style id="2">
-        <name>heading2</name>
-        <type>段落</type>
-        <color>#FFFFFF</color>
-        <fontSize>20</fontSize>
-    </style>
+                    
+    
+    
+    
+    <xml-fragment xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" w:customStyle="1" w:styleId="a4" w:type="paragraph">
+                                
+        
+        
+        <w:name w:val="参考文献"/>
+                                
+        
+        
+        <w:basedOn w:val="af0"/>
+                                
+        
+        
+        <w:link w:val="af5"/>
+                                
+        
+        
+        <w:qFormat/>
+                                
+        
+        
+        <w:rsid w:val="009A499E"/>
+                                
+        
+        
+        <w:pPr>
+                                                
+            
+            
+            <w:numPr>
+                                                                
+                
+                
+                <w:ilvl w:val="5"/>
+                                                                
+                
+                
+                <w:numId w:val="1"/>
+                                                            
+            
+            
+            </w:numPr>
+                                                
+            
+            
+            <w:ind w:firstLineChars="0"/>
+                                            
+        
+        
+        </w:pPr>
+                                
+        
+        
+        <w:rPr>
+                                                
+            
+            
+            <w:rFonts w:eastAsia="宋体"/>
+                                            
+        
+        
+        </w:rPr>
+                            
+    
+    
+    </xml-fragment>
+                    
+    
+    
+    
+    <xml-fragment xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" w:customStyle="1" w:styleId="af0" w:type="paragraph">
+                                
+        
+        
+        <w:name w:val="美赛正文"/>
+                                
+        
+        
+        <w:basedOn w:val="a5"/>
+                                
+        
+        
+        <w:link w:val="af1"/>
+                                
+        
+        
+        <w:qFormat/>
+                                
+        
+        
+        <w:rsid w:val="00302704"/>
+                                
+        
+        
+        <w:pPr>
+                                                
+            
+            
+            <w:ind w:firstLine="200" w:firstLineChars="200"/>
+                                            
+        
+        
+        </w:pPr>
+                                
+        
+        
+        <w:rPr>
+                                                
+            
+            
+            <w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>
+                                                
+            
+            
+            <w:sz w:val="24"/>
+                                                
+            
+            
+            <w:szCs w:val="24"/>
+                                            
+        
+        
+        </w:rPr>
+                            
+    
+    
+    </xml-fragment>
+                
+    
+    
+    
+    <xml-fragment xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" w:customStyle="1" w:styleId="tset1" w:type="paragraph">
+                                
+        
+        
+        <w:name w:val="tset1"/>
+                                
+        
+        
+        <w:basedOn w:val="a5"/>
+                                
+        
+        
+        <w:qFormat/>
+                                
+        
+        
+        <w:rsid w:val="00302704"/>
+                                
+        
+        
+        <w:pPr>
+                                                
+            
+            
+            <w:ind w:firstLine="200" w:firstLineChars="200"/>
+                                                
+            
+            
+            <w:spacing w:after="20" w:before="20" w:line="240" w:lineRule="auto"/>
+                                                
+            
+            
+            <w:jc w:val="left"/>
+                                            
+        
+        
+        </w:pPr>
+                                
+        
+        
+        <w:rPr>
+                                                
+            
+            
+            <w:sz w:val="24"/>
+                                                
+            
+            
+            <w:szCs w:val="24"/>
+                                                
+            
+            
+            <w:color w:val="CC8099"/>
+                                            
+        
+        
+        </w:rPr>
+                            
+    
+    
+    </xml-fragment>
+                
+    
+    
+    <xml-fragment xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" w:customStyle="1" w:styleId="a2" w:type="paragraph">
+                        
+        
+        <w:name w:val="图注"/>
+                        
+        
+        <w:basedOn w:val="a4"/>
+                        
+        
+        <w:link w:val="af6"/>
+                        
+        
+        <w:qFormat/>
+                        
+        
+        <w:rsid w:val="009A499E"/>
+                        
+        
+        <w:pPr>
+                                    
+            
+            <w:numPr>
+                                                
+                
+                <w:ilvl w:val="3"/>
+                                            
+            
+            </w:numPr>
+                                    
+            
+            <w:spacing w:after="50" w:afterLines="50"/>
+                                    
+            
+            <w:jc w:val="center"/>
+                                
+        
+        </w:pPr>
+                        
+        
+        <w:rPr>
+                                    
+            
+            <w:b/>
+                                
+        
+        </w:rPr>
+                    
+    
+    </xml-fragment>
+    <xml-fragment xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" w:type="paragraph">
+        <w:name w:val="center"/>
+        <w:link w:val="center"/>
+        <w:qFormat/>
+        <w:pPr>
+            <w:spacing w:after="240" w:before="240" w:line="240" w:lineRule="auto"/>
+            <w:jc w:val="center"/>
+        </w:pPr>
+        <w:rPr>
+            <w:rFonts w:ascii="Arial" w:eastAsia="宋体" w:hAnsi="Arial"/>
+            <w:b/>
+            <w:sz w:val="64"/>
+            <w:szCs w:val="64"/>
+            <w:color w:val="E64D4D"/>
+        </w:rPr>
+    </xml-fragment>
 </styles>
