@@ -6,10 +6,13 @@ import com.ind.word_style_controller.service.FileWatcherService;
 import com.ind.word_style_controller.service.StyleApplicatorService;
 import com.ind.word_style_controller.service.StyleLoaderService;
 import com.ind.word_style_controller.service.StyleTableController;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
@@ -29,6 +32,8 @@ public class MainController {
     public Button injectToDocx;
     @FXML
     public Button removeStyleButton;
+    @FXML
+    public Label styleCountLabel;
     @FXML
     public TableView<StyleModel> styleTable;
     
@@ -50,6 +55,8 @@ public class MainController {
                 switchToCustomizeForm();
             } else if ("Import".equals(selectedItem)) {
                 switchToImportForm();
+            } else if ("About".equals(selectedItem)) {
+                showAboutDialog();
             }
         });
         
@@ -82,10 +89,22 @@ public class MainController {
         try {
             // 静默加载样式数据，不显示任何弹窗
             styleTableController.setStyleData(styleLoaderService.loadStylesFromXml());
+            // 确保UI更新在JavaFX应用线程中执行
+            Platform.runLater(this::updateStyleCountLabel);
         } catch (Exception e) {
             // 捕获任何可能的异常，确保应用程序不会因为样式加载问题而崩溃
             System.out.println("Note: Unable to reload styles at this moment. Will retry automatically.");
             // 不打印堆栈跟踪，避免在正常操作（如删除样式）导致的文件变化时显示大量错误信息
+        }
+    }
+    
+    /**
+     * 更新样式计数标签
+     */
+    private void updateStyleCountLabel() {
+        if (styleCountLabel != null && styleTableController != null) {
+            int styleCount = styleTableController.getStyleData().size();
+            styleCountLabel.setText(styleCount + " 个样式");
         }
     }
     
@@ -205,6 +224,9 @@ public class MainController {
             styleTable.getSelectionModel().clearSelection();
 
             System.out.print("Removed " + tableRemovedCount + " styles from the table, " + xmlRemovedCount + " styles from XML.");
+            // 更新样式计数标签
+            updateStyleCountLabel();
+            
             // 显示操作结果
             if (tableRemovedCount > 0) {
                 javafx.scene.control.Alert successAlert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
@@ -213,8 +235,8 @@ public class MainController {
 
                 if (xmlRemovedCount == tableRemovedCount) {
                     successAlert.setContentText("已成功删除 " + xmlRemovedCount + " 个样式！");
-                } else if (xmlRemovedCount > 0) {
-                    successAlert.setContentText("已删除 " + tableRemovedCount + " 个样式，但其中只有 " + xmlRemovedCount + " 个样式从XML文件中删除成功。");
+                } else if (xmlRemovedCount > tableRemovedCount) {
+                    successAlert.setContentText("已删除 " + tableRemovedCount + " 个样式，但其中有 " + xmlRemovedCount + " 个样式从XML文件中删除成功。可能是由于自定义样式的id一致所导致的");
                 } else {
                     successAlert.setContentText("已从表格中删除 " + tableRemovedCount + " 个样式，但无法从XML文件中删除。请检查文件权限或格式。");
                 }
@@ -228,6 +250,27 @@ public class MainController {
                 errorAlert.showAndWait();
             }
         }
+    }
+    
+    /**
+     * 显示关于对话框
+     */
+    private void showAboutDialog() {
+        Alert aboutAlert = new Alert(Alert.AlertType.INFORMATION);
+        aboutAlert.setTitle("关于");
+        aboutAlert.setHeaderText("Word样式控制器");
+        
+        String aboutContent = "程序名称：Word样式控制器\n" +
+                             "版本：1.0\n" +
+                             "作者：Aiden\n" +
+                             "联系方式：aidenhong916@outlook.com\n" +
+                             "功能：管理和应用Word文档样式\n\n" +
+                             "© 2024 Aiden. All rights reserved.";
+        
+        aboutAlert.setContentText(aboutContent);
+        aboutAlert.setResizable(true);
+        aboutAlert.getDialogPane().setPrefWidth(400);
+        aboutAlert.showAndWait();
     }
     
     /**

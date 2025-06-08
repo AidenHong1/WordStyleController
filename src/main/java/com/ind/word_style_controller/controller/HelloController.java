@@ -1,9 +1,9 @@
 package com.ind.word_style_controller.controller;
 
 import com.ind.StyleModel;
-import com.ind.word_style_controller.controller.MainController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TableView;
 
@@ -18,6 +18,8 @@ public class HelloController {
     public Button injectToDocx;
     @FXML
     public Button removeStyleButton;
+    @FXML
+    public Label styleCountLabel;
     @FXML
     private TableView<StyleModel> styleTable;
     
@@ -35,6 +37,7 @@ public class HelloController {
         mainController.menuList = this.menuList;
         mainController.injectToDocx = this.injectToDocx;
         mainController.removeStyleButton = this.removeStyleButton;
+        mainController.styleCountLabel = this.styleCountLabel;
         mainController.styleTable = this.styleTable;
         
         // 初始化主控制器

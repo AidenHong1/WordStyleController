@@ -282,7 +282,7 @@ public class CustomizeController implements Initializable {
 
         ComboBox<String> fontCombo = new ComboBox<>();
         fontCombo.getItems().addAll(javafx.scene.text.Font.getFamilies());
-        fontCombo.setPromptText("英文字体");
+        fontCombo.setPromptText("请选择字体");
         fontCombo.setPrefWidth(150);
         // Replace nameField with fontComboBox in the layout
 
@@ -326,7 +326,7 @@ public class CustomizeController implements Initializable {
             "STSong", "STKaiti", "STFangsong", "华文宋体", "华文黑体", "华文楷体", "华文仿宋",
             "方正黑体", "方正宋体", "方正楷体", "思源黑体", "思源宋体"
         );
-        eastAsiaFontCombo.setPromptText("中文字体");
+        eastAsiaFontCombo.setPromptText("请选择字体");
         eastAsiaFontCombo.setPrefWidth(150);
         
         // 初始化默认值
@@ -340,7 +340,7 @@ public class CustomizeController implements Initializable {
         gridPane.add(styleNameLabel, 0, 0);
         gridPane.add(styleNameField, 1, 0);
 
-        Label nameLabel = new Label("样式字体:");
+        Label nameLabel = new Label("英文字体:");
         nameLabel.setStyle("-fx-font-weight: bold;");
         gridPane.add(nameLabel, 2, 0);
         gridPane.add(fontCombo, 3, 0);

@@ -117,8 +117,6 @@
                                 <Insets top="12" right="30" bottom="12" left="30" />
                             </padding>
                         </Button>
-                        
-
                     </HBox>
                 </VBox>
             </VBox>
