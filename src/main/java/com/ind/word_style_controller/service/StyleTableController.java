@@ -209,37 +209,17 @@ public class StyleTableController {
         
         return false;
     }
-    
+
     /**
-     * 批量删除多个样式
-     * @param styles 要删除的样式列表
-     * @return 成功删除的样式数量
+     * 根据 id 列表批量删除样式
+     * @param ids 样式 id 列表
+     * @return 实际删除的数量
      */
-    public int removeStyles(java.util.List<StyleModel> styles) {
-        if (styles == null || styles.isEmpty()) {
-            return 0;
-        }
-        
-        int successCount = 0;
-        // 创建要删除的样式ID列表
-        java.util.List<String> styleIdsToRemove = new java.util.ArrayList<>();
-        for (StyleModel style : styles) {
-            styleIdsToRemove.add(style.getId());
-        }
-        
-        // 创建要删除的样式对象列表
-        java.util.List<StyleModel> stylesToRemove = new java.util.ArrayList<>();
-        for (StyleModel style : styleData) {
-            if (styleIdsToRemove.contains(style.getId())) {
-                stylesToRemove.add(style);
-                successCount++;
-            }
-        }
-        
-        // 从数据集合中删除样式
-        styleData.removeAll(stylesToRemove);
-        
-        return successCount;
+    public int removeStylesByIds(java.util.List<String> ids) {
+        if (ids == null || ids.isEmpty()) return 0;
+        java.util.Set<String> idSet = new java.util.HashSet<>(ids);
+        styleData.removeIf(item -> idSet.contains(item.getId()));
+        return ids.size();
     }
     
     /**

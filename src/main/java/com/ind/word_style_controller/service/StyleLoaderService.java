@@ -270,13 +270,7 @@ public class StyleLoaderService {
                     // 获取样式ID
                     String currentStyleId = null;
                     
-                    // 先检查w:styleId属性
-                    String styleIdAttr = styleElement.getAttribute("w:styleId");
-                    if (styleIdAttr != null && !styleIdAttr.isEmpty()) {
-                        currentStyleId = styleIdAttr;
-                    }
-                    
-                    // 如果没有w:styleId属性，检查w:link元素
+                    // 检查w:link元素
                     if (currentStyleId == null || currentStyleId.isEmpty()) {
                         NodeList linkNodes = styleElement.getElementsByTagName("w:link");
                         if (linkNodes.getLength() > 0) {
