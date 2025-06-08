@@ -1,4 +1,4 @@
-package com.ind.word_style_controller;
+package com.ind.word_style_controller.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

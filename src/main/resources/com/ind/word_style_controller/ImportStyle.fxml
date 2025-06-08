@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ind.word_style_controller.ImportController" stylesheets="@style.css">
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.ind.word_style_controller.controller.ImportController" stylesheets="@style.css">
    <children>
       <Label text="从DOCX文件导入样式">
          <font>

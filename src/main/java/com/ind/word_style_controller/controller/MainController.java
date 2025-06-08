@@ -1,6 +1,11 @@
-package com.ind.word_style_controller;
+package com.ind.word_style_controller.controller;
 
 import com.ind.StyleModel;
+import com.ind.word_style_controller.HelloApplication;
+import com.ind.word_style_controller.service.FileWatcherService;
+import com.ind.word_style_controller.service.StyleApplicatorService;
+import com.ind.word_style_controller.service.StyleLoaderService;
+import com.ind.word_style_controller.service.StyleTableController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,8 +15,6 @@ import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
@@ -76,7 +79,7 @@ public class MainController {
     private void switchToCustomizeForm() {
         try {
             // 加载 customize-form 的 FXML 文件
-            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("Customize-form.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/com/ind/word_style_controller/Customize-form.fxml"));
             Stage stage = new Stage();
             // 设置新的场景
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -98,7 +101,7 @@ public class MainController {
     private void switchToImportForm() {
         try {
             // 加载 ImportStyle 的 FXML 文件
-            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("ImportStyle.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/com/ind/word_style_controller/ImportStyle.fxml"));
             Stage stage = new Stage();
             // 设置新的场景
             stage.initModality(Modality.APPLICATION_MODAL);

@@ -6,6 +6,8 @@ module com.ind.word_style_controller {
     requires org.apache.poi.ooxml.schemas;
     opens com.ind to javafx.base;
     opens com.ind.word_style_controller to javafx.fxml;
+    opens com.ind.word_style_controller.controller to javafx.fxml;
     exports com.ind.word_style_controller;
     exports com.ind;
+    exports com.ind.word_style_controller.controller;
 }

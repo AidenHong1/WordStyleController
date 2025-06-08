@@ -1,4 +1,4 @@
-package com.ind.word_style_controller;
+package com.ind.word_style_controller.service;
 
 import javafx.application.Platform;
 

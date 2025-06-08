@@ -1,5 +1,4 @@
-package com.ind.word_style_controller;
-
+package com.ind.word_style_controller.controller;
 import com.ind.StyleModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -41,7 +40,7 @@ public class HelloController {
      * 将样式注入到DOCX文件
      */
     @FXML
-    private void injectToDocx() {
+    public void injectToDocx() {
         mainController.injectToDocx();
     }
 }

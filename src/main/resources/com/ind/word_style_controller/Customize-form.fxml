@@ -6,7 +6,7 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/11"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.ind.word_style_controller.CustomizeController"
+      fx:controller="com.ind.word_style_controller.controller.CustomizeController"
       prefWidth="800" prefHeight="600"
       minWidth="700" minHeight="500"
       stylesheets="@style.css">

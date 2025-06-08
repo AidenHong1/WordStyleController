@@ -7,11 +7,13 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
 
+import com.ind.word_style_controller.controller.HelloController;
+
 public class HelloApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         // 打开hello-view.fxml
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("hello-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/com/ind/word_style_controller/hello-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1200, 800);
         
         // 设置窗口标题
