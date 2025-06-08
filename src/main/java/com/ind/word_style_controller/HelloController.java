@@ -7,18 +7,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTFont;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTFonts;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTRPr;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
-import org.openxmlformats.schemas.wordprocessingml.x2006.main.STStyleType;
+import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -28,7 +27,7 @@ import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.awt.*;
+import java.awt.Desktop;
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.file.*;
@@ -63,6 +62,8 @@ public class HelloController {
     @FXML
     private TableColumn<StyleModel, String> fontSizeColumn;
     @FXML
+    private TableColumn<StyleModel, String> alignmentColumn;
+    @FXML
     private TableColumn<StyleModel, Double> paragraphSpacingColumn;
     @FXML
     private TableColumn<StyleModel, Double> lineSpacingColumn;
@@ -85,6 +86,7 @@ public class HelloController {
         valColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         fontColumn.setCellValueFactory(new PropertyValueFactory<>("font"));
         typeColumn.setCellValueFactory(new PropertyValueFactory<>("type"));
+        alignmentColumn.setCellValueFactory(new PropertyValueFactory<>("alignment"));
         colorColumn.setCellValueFactory(new PropertyValueFactory<>("color"));
         
         // 为字体大小列使用自定义的CellValueFactory处理类型转换
@@ -149,13 +151,35 @@ public class HelloController {
         });
         
         colorColumn.setCellFactory(column -> new TableCell<StyleModel, String>() {
+            private final Rectangle colorRect = new Rectangle(16, 16);
+            private final HBox hbox = new HBox(5);
+            private final Label colorLabel = new Label();
+            
+            {
+                hbox.setAlignment(Pos.CENTER_LEFT);
+                hbox.getChildren().addAll(colorRect, colorLabel);
+            }
+            
             @Override
             protected void updateItem(String color, boolean empty) {
                 super.updateItem(color, empty);
                 if (empty || color == null) {
                     setText(null);
+                    setGraphic(null);
                 } else {
-                    setText(color);
+                    try {
+                        // 处理颜色格式，确保是有效的JavaFX颜色
+                        String colorCode = color.startsWith("#") ? color : "#" + color;
+                        Color fxColor = Color.web(colorCode);
+                        colorRect.setFill(fxColor);
+                        colorRect.setStroke(Color.BLACK);
+                        colorLabel.setText(color);
+                        setGraphic(hbox);
+                    } catch (Exception e) {
+                        // 如果颜色无效，只显示文本
+                        setText(color);
+                        setGraphic(null);
+                    }
                 }
             }
         });
@@ -169,10 +193,11 @@ public class HelloController {
             double width = newVal.doubleValue();
             // 设置各列的相对宽度百分比
             valColumn.setPrefWidth(width * 0.15);          // 12%
-            fontColumn.setPrefWidth(width * 0.20);         // 25% - 最宽
-            typeColumn.setPrefWidth(width * 0.15);         // 10%
+            fontColumn.setPrefWidth(width * 0.15);         // 25% - 最宽
+            typeColumn.setPrefWidth(width * 0.10);         // 10%
             colorColumn.setPrefWidth(width * 0.10);        // 6% - 最窄
-            fontSizeColumn.setPrefWidth(width * 0.10);     // 12%
+            fontSizeColumn.setPrefWidth(width * 0.10);
+            alignmentColumn.setPrefWidth(width * 0.10);     // 12%
             paragraphBeforeSpacingColumn.setPrefWidth(width * 0.10); // 11%
             paragraphSpacingColumn.setPrefWidth(width * 0.10);      // 11%
             lineSpacingColumn.setPrefWidth(width * 0.10);           // 11%
@@ -285,7 +310,34 @@ public class HelloController {
                             paragraphBeforeSpacing = Double.parseDouble(beforeVal) / 20.0; // 转换为磅值
                         }
                     }
-                    
+                    // 获取对齐方式
+                    String alignment = "left"; // 默认左对齐
+                    NodeList alignmentNodes = styleElement.getElementsByTagName("w:jc");
+                    if (alignmentNodes.getLength() > 0) {
+                        Element alignmentElement = (Element) alignmentNodes.item(0);
+                        String val = alignmentElement.getAttribute("w:val");
+                        if (!val.isEmpty()) {
+                            switch (val) {
+                                case "left":
+                                    alignment = "left";
+                                    break;
+                                case "center":
+                                    alignment = "center";
+                                    break;
+                                case "right":
+                                    alignment = "right";
+                                    break;
+                                case "both":
+                                    alignment = "both";
+                                    break;
+                                case "distribute":
+                                    alignment = "distribute";
+                                    break;
+                            }
+                        }else{
+                            alignment = "left";
+                        }
+                    }
                     // 获取行间距
                     double lineSpacing = 1.0; // 默认单倍行距
                     if (spacingNodes.getLength() > 0) {
@@ -302,7 +354,7 @@ public class HelloController {
                     }
                     
                     // 添加到样式数据中
-                    styleData.add(new StyleModel(styleId, styleName, font, type, color, fontSize, paragraphSpacing, lineSpacing, paragraphBeforeSpacing));
+                    styleData.add(new StyleModel(styleId, styleName, font, type, color, fontSize,alignment, paragraphSpacing, lineSpacing, paragraphBeforeSpacing));
                 }
             }
         } catch (Exception e) {
@@ -488,6 +540,17 @@ public class HelloController {
                     String correctedColor = color.startsWith("#") ? color.substring(1) : color;
                     rpr.addNewColor().setVal(correctedColor.toUpperCase());
                     
+                    CTPPrGeneral pPr = ctStyle.addNewPPr();
+                    // 设置对齐方式
+                    String alignment = styleModel.alignment();
+                    pPr.addNewJc().setVal(STJc.Enum.forString(alignment));
+                    
+                    // 设置段落间距
+                    double paragraphSpacing = styleModel.paragraphSpacing();
+                    double paragraphBeforeSpacing = styleModel.paragraphBeforeSpacing();
+                    pPr.addNewSpacing().setAfter(BigInteger.valueOf((int) (paragraphSpacing * 20)));
+                    pPr.addNewSpacing().setBefore(BigInteger.valueOf((int) (paragraphBeforeSpacing * 20)));
+
                     // 添加样式到文档
                     document.getStyles().addStyle(style);
                     

@@ -87,6 +87,7 @@
                             <TableColumn fx:id="typeColumn" text="类型" prefWidth="80" />
                             <TableColumn fx:id="colorColumn" text="颜色" prefWidth="50" />
                             <TableColumn fx:id="fontSizeColumn" text="字体大小" prefWidth="80" />
+                            <TableColumn fx:id="alignmentColumn" text="对齐方式" prefWidth="60" />
                             <TableColumn fx:id="paragraphBeforeSpacingColumn" text="段落前间距" prefWidth="60" />
                             <TableColumn fx:id="paragraphSpacingColumn" text="段落后间距" prefWidth="60" />
                             <TableColumn fx:id="lineSpacingColumn" text="行间距" prefWidth="60" />

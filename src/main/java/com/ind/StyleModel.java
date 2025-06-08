@@ -1,6 +1,6 @@
 package com.ind;
 
-public record StyleModel(String id, String name, String font, String type, String color, int fontSize, double paragraphSpacing, double lineSpacing, double paragraphBeforeSpacing) {
+public record StyleModel(String id, String name, String font, String type, String color, int fontSize,String alignment, double paragraphSpacing, double lineSpacing, double paragraphBeforeSpacing) {
     public String getId(){
         return id;
     }
@@ -20,6 +20,9 @@ public record StyleModel(String id, String name, String font, String type, Strin
         return color;
     }
 
+    public String getAlignment() {
+        return alignment;
+    }
     public int getFontSize() {
         return fontSize;
     }
