@@ -12,10 +12,21 @@ import org.apache.poi.xwpf.usermodel.XWPFStyle;
 import org.apache.poi.xwpf.usermodel.XWPFStyles;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTStyle;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 
 public class ImportController {
@@ -209,9 +220,29 @@ public class ImportController {
             existingContent.insert(endTagIndex, newStylesContent.toString());
             
             // 写入更新后的内容到文件
-            FileWriter writer = new FileWriter(outputFile);
-            writer.write(existingContent.toString());
-            writer.close();
+            // 使用XML转换器而不是直接写入，以确保一致的格式
+            try {
+                // 解析更新后的内容
+                DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+                Document doc = docBuilder.parse(new InputSource(new StringReader(existingContent.toString())));
+                
+                // 创建转换器
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                Transformer transformer = transformerFactory.newTransformer();
+                // 设置输出属性，但不使用缩进，避免插入过多空格
+                transformer.setOutputProperty(OutputKeys.INDENT, "no");
+                
+                // 保存文档
+                DOMSource source = new DOMSource(doc);
+                StreamResult result = new StreamResult(outputFile);
+                transformer.transform(source, result);
+            } catch (Exception ex) {
+                // 如果XML转换失败，回退到直接写入方式
+                FileWriter writer = new FileWriter(outputFile);
+                writer.write(existingContent.toString());
+                writer.close();
+            }
             
             statusLabel.setText("已追加 " + addedStylesCount + " 个新样式到 " + outputPath);
             showAlert("成功", "已成功追加 " + addedStylesCount + " 个新样式到 " + outputPath);

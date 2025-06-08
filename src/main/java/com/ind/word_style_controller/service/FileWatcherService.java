@@ -1,84 +1,135 @@
 package com.ind.word_style_controller.service;
 
-import javafx.application.Platform;
-
+import java.io.IOException;
 import java.nio.file.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
- * 文件监视服务，负责监视styles.xml文件的变化
+ * 文件监视服务
+ * 监视styles.xml文件的变化，当文件变化时触发回调
  */
 public class FileWatcherService {
-    private final ExecutorService executorService;
-    private final Runnable onFileChangedCallback;
-    private boolean isWatching = false;
+    private final Path filePath;
+    private final Runnable callback;
+    private WatchService watchService;
+    private Thread watchThread;
+    private volatile boolean running = false;
     
     /**
      * 构造函数
-     * @param onFileChangedCallback 文件变化时的回调函数
+     * @param callback 文件变化时的回调函数
+     * @throws IOException 如果无法创建监视服务
      */
-    public FileWatcherService(Runnable onFileChangedCallback) {
-        this.executorService = Executors.newSingleThreadExecutor();
-        this.onFileChangedCallback = onFileChangedCallback;
+    public FileWatcherService(Runnable callback) throws IOException {
+        // 获取styles.xml文件的路径
+        this.filePath = Paths.get("src/main/resources").toAbsolutePath();
+        this.callback = callback;
+        this.watchService = FileSystems.getDefault().newWatchService();
     }
     
     /**
-     * 开始监视文件
+     * 启动文件监视服务
      */
-    public void startWatching() {
-        if (isWatching) {
+    public void start() {
+        if (running) {
             return;
         }
         
-        isWatching = true;
-        executorService.submit(() -> {
-            try {
-                Path path = Paths.get("target", "classes");
-                WatchService watchService = FileSystems.getDefault().newWatchService();
-                path.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
-
-                boolean running = true;
-                while (running && !Thread.currentThread().isInterrupted()) {
-                    try {
-                        WatchKey key = watchService.take();
+        try {
+            // 注册目录监视
+            filePath.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+            
+            running = true;
+            watchThread = new Thread(() -> {
+                try {
+                    System.out.println("Watching for changes in: " + filePath);
+                    
+                    while (running) {
+                        WatchKey key;
+                        try {
+                            // 等待事件，设置超时以便能够检查running标志
+                            key = watchService.poll(500, TimeUnit.MILLISECONDS);
+                            if (key == null) {
+                                // 超时，继续循环
+                                continue;
+                            }
+                        } catch (InterruptedException e) {
+                            System.out.println("Watch service interrupted");
+                            return;
+                        }
+                        
+                        // 处理所有事件
                         for (WatchEvent<?> event : key.pollEvents()) {
                             WatchEvent.Kind<?> kind = event.kind();
-                            if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
-                                Path changed = (Path) event.context();
-                                if ("styles.xml".equals(changed.toString())) {
-                                    // 在JavaFX应用程序线程上执行回调
-                                    Platform.runLater(onFileChangedCallback);
-                                }
+                            
+                            // 忽略OVERFLOW事件
+                            if (kind == StandardWatchEventKinds.OVERFLOW) {
+                                continue;
+                            }
+                            
+                            // 获取文件名
+                            @SuppressWarnings("unchecked")
+                            WatchEvent<Path> ev = (WatchEvent<Path>) event;
+                            Path filename = ev.context();
+                            
+                            // 如果是styles.xml文件变化
+                            if (filename.toString().equals("styles.xml")) {
+                                System.out.println("Detected change in styles.xml");
+                                
+                                // 执行回调
+                                callback.run();
                             }
                         }
+                        
+                        // 重置key
                         boolean valid = key.reset();
                         if (!valid) {
+                            System.out.println("Watch key no longer valid");
                             break;
                         }
-                    } catch (InterruptedException e) {
-                        // 线程被中断，优雅地退出循环
-                        running = false;
-                        Thread.currentThread().interrupt(); // 重新设置中断状态
-                        System.out.println("文件监视线程被中断，正在退出...");
+                    }
+                } catch (Exception e) {
+                    // 检查异常类型，如果是由于文件正在被修改导致的异常，则不打印堆栈跟踪
+                    if (e instanceof java.nio.file.NoSuchFileException ||
+                        e instanceof java.nio.file.AccessDeniedException ||
+                        e.getMessage() != null && e.getMessage().contains("文件提前结束")) {
+                        System.out.println("Note: File watcher detected a temporary file state. This is normal during file operations.");
+                    } else {
+                        // 对于其他类型的异常，打印更详细的信息
+                        System.err.println("Error in file watcher: " + e.getMessage());
+                        e.printStackTrace();
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                System.err.println("Failed to watch styles.xml");
-            }
-        });
+            });
+            
+            watchThread.setDaemon(true);
+            watchThread.start();
+        } catch (Exception e) {
+            System.err.println("Failed to start file watcher: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     
     /**
-     * 停止监视文件
+     * 停止文件监视服务
      */
-    public void stopWatching() {
-        if (!isWatching) {
-            return;
+    public void stop() {
+        running = false;
+        if (watchThread != null) {
+            watchThread.interrupt();
+            try {
+                watchThread.join(1000);
+            } catch (InterruptedException e) {
+                System.err.println("Interrupted while stopping file watcher");
+            }
         }
         
-        isWatching = false;
-        executorService.shutdownNow();
+        try {
+            if (watchService != null) {
+                watchService.close();
+            }
+        } catch (IOException e) {
+            System.err.println("Error closing watch service: " + e.getMessage());
+        }
     }
 }

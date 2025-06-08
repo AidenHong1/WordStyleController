@@ -51,16 +51,16 @@ public class StyleApplicatorService {
             XWPFDocument document = new XWPFDocument(fis);
             fis.close();
 
-            // 加载styles.xml文件以获取原始XML片段
-            InputStream stylesStream = getClass().getClassLoader().getResourceAsStream("styles.xml");
-            if (stylesStream == null) {
-                throw new IOException("styles.xml not found in classpath");
+            // 从XML文件中加载样式数据
+            String stylesXmlPath = "src/main/resources/styles.xml";
+            File stylesFile = new File(stylesXmlPath);
+            if (!stylesFile.exists()) {
+                throw new IOException("styles.xml not found at " + stylesXmlPath);
             }
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document stylesDoc = dBuilder.parse(stylesStream);
+            Document stylesDoc = dBuilder.parse(stylesFile);
             stylesDoc.getDocumentElement().normalize();
-            stylesStream.close();
 
             // 获取所有xml-fragment节点
             NodeList styleNodes = stylesDoc.getElementsByTagName("xml-fragment");

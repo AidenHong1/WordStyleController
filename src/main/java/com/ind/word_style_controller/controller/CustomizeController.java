@@ -1,6 +1,7 @@
 package com.ind.word_style_controller.controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -18,21 +19,39 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
-public class CustomizeController{
+public class CustomizeController implements Initializable {
     @FXML
     private VBox stylesContainer;
 
     private List<Map<String, Object>> styleEntries = new ArrayList<>();
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        hideEntry();
+    }
+
+    public void hideEntry(){
+        // 初始化时设置stylesContainer的高度为0
+        stylesContainer.setMinHeight(0);
+        stylesContainer.setPrefHeight(0);
+        stylesContainer.setMaxHeight(0);
+    }
     @FXML
     private void handleAddStyle() {
         HBox form = createStyleForm();
         stylesContainer.getChildren().add(form);
+        
+        // 添加样式后，重置高度为自动
+        stylesContainer.setMinHeight(-1);
+        stylesContainer.setPrefHeight(-1);
+        stylesContainer.setMaxHeight(-1);
     }
 
     @FXML
@@ -61,7 +80,8 @@ public class CustomizeController{
                 
                 // 保存基本XML文件
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                // 设置输出属性，但不使用缩进，避免插入过多空格
+                transformer.setOutputProperty(OutputKeys.INDENT, "no");
                 transformer.transform(new DOMSource(newDoc), new StreamResult(xmlFile));
             }
             
@@ -227,7 +247,8 @@ public class CustomizeController{
 
             // 保存修改后的 XML 文件
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            // 设置输出属性，但不使用缩进，避免插入过多空格
+            transformer.setOutputProperty(OutputKeys.INDENT, "no");
             transformer.transform(new DOMSource(doc), new StreamResult(xmlFile));
             showAlert("成功", "样式已追加到 XML 文件!", Alert.AlertType.INFORMATION);
         } catch (Exception e) {
@@ -379,6 +400,9 @@ public class CustomizeController{
             // 从容器和数据列表中移除
             stylesContainer.getChildren().remove(hbox);
             styleEntries.removeIf(entry -> entry.get("nameField") == styleNameField);
+            if(styleEntries.size() == 0){
+                hideEntry();
+            }
         });
         
         hbox.getChildren().addAll(gridPane, deleteButton);

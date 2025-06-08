@@ -57,7 +57,7 @@
             
             <!-- 样式列表容器 -->
             <ScrollPane fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS">
-                    <TitledPane text="样式配置列表" expanded="true" collapsible="false">
+                    <TitledPane expanded="true" collapsible="false">
                         <graphic>
                             <HBox alignment="CENTER_LEFT" spacing="10">
                                 <Label text="样式配置列表">

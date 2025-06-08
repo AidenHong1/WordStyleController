@@ -1,8 +1,10 @@
 package com.ind.word_style_controller.service;
 
 import com.ind.StyleModel;
+import com.ind.word_style_controller.utils.CommonUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.paint.Color;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -10,33 +12,62 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
- * 样式加载服务，负责从XML文件加载样式数据
+ * 样式加载服务
+ * 负责从XML文件中加载样式数据
  */
 public class StyleLoaderService {
+    
+    // 样式文件路径
+    private final String stylesXmlPath = "src/main/resources/styles.xml";
     
     /**
      * 从XML文件加载样式数据
      * @return 样式数据列表
      */
     public ObservableList<StyleModel> loadStylesFromXml() {
-        ObservableList<StyleModel> styleData = FXCollections.observableArrayList();
+        ObservableList<StyleModel> styles = FXCollections.observableArrayList();
         
         try {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("styles.xml");
-            if (inputStream == null) {
-                throw new IOException("styles.xml not found in classpath");
+            // 从文件系统加载styles.xml文件
+            File stylesFile = new File(stylesXmlPath);
+            if (!stylesFile.exists()) {
+                System.err.println("Could not find styles.xml at " + stylesXmlPath);
+                return styles;
             }
             
+            // 检查文件大小，如果文件为空或太小，可能是新创建的或被清空的
+            if (stylesFile.length() < 50) { // 一个基本的XML结构至少需要这么多字节
+                System.out.println("styles.xml is empty or contains only basic structure");
+                return styles;
+            }
+            
+            // 解析XML文档
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(inputStream);
+            Document doc = dBuilder.parse(stylesFile);
             doc.getDocumentElement().normalize();
             
+            // 检查是否有xml-fragment节点，如果没有，则认为文件只包含基本结构
             NodeList styleNodes = doc.getElementsByTagName("xml-fragment");
+            if (styleNodes.getLength() == 0) {
+                System.out.println("styles.xml contains only basic structure without any style definitions");
+                return styles;
+            }
+            
             for (int i = 0; i < styleNodes.getLength(); i++) {
                 Node styleNode = styleNodes.item(i);
                 if (styleNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -44,17 +75,17 @@ public class StyleLoaderService {
                     
                     // 解析样式属性
                     StyleModel styleModel = parseStyleElement(styleElement);
-                    styleData.add(styleModel);
+                    styles.add(styleModel);
                 }
             }
-            
-            inputStream.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            // 不打印堆栈跟踪，只显示简短的错误信息
+            // 这样可以避免在正常操作（如删除样式）导致的文件变化时显示大量错误信息
+            System.out.println("Note: styles.xml may be in transition due to recent changes. Will retry on next refresh.");
             System.err.println("Failed to load styles.xml: " + e.getMessage());
         }
         
-        return styleData;
+        return styles;
     }
     
     /**
@@ -199,5 +230,104 @@ public class StyleLoaderService {
         
         // 创建并返回样式模型对象
         return new StyleModel(styleId, styleName, font, type, color, fontSize, alignment, paragraphSpacing, lineSpacing, paragraphBeforeSpacing);
+    }
+    
+    /**
+     * 批量删除多个样式
+     * @param styleIds 要删除的样式ID列表
+     * @return 成功删除的样式数量
+     */
+    public int removeStylesByIds(List<String> styleIds) {
+        if (styleIds == null || styleIds.isEmpty()) {
+            return 0;
+        }
+        
+        int successCount = 0;
+        
+        try {
+            // 获取styles.xml文件
+            File stylesFile = new File(stylesXmlPath);
+            if (!stylesFile.exists()) {
+                throw new IOException("styles.xml not found at " + stylesXmlPath);
+            }
+            
+            // 解析XML文档
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(stylesFile);
+            doc.getDocumentElement().normalize();
+            
+            // 查找所有xml-fragment元素
+            NodeList styleNodes = doc.getElementsByTagName("xml-fragment");
+            java.util.List<Node> nodesToRemove = new java.util.ArrayList<>();
+            
+            // 遍历所有样式节点，找出需要删除的节点
+            for (int i = 0; i < styleNodes.getLength(); i++) {
+                Node styleNode = styleNodes.item(i);
+                if (styleNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element styleElement = (Element) styleNode;
+                    
+                    // 获取样式ID
+                    String currentStyleId = null;
+                    
+                    // 先检查w:styleId属性
+                    String styleIdAttr = styleElement.getAttribute("w:styleId");
+                    if (styleIdAttr != null && !styleIdAttr.isEmpty()) {
+                        currentStyleId = styleIdAttr;
+                    }
+                    
+                    // 如果没有w:styleId属性，检查w:link元素
+                    if (currentStyleId == null || currentStyleId.isEmpty()) {
+                        NodeList linkNodes = styleElement.getElementsByTagName("w:link");
+                        if (linkNodes.getLength() > 0) {
+                            Element linkElement = (Element) linkNodes.item(0);
+                            currentStyleId = linkElement.getAttribute("w:val");
+                        }
+                    }
+                    
+                    // 如果仍然没有找到ID，检查w:name元素
+                    if (currentStyleId == null || currentStyleId.isEmpty()) {
+                        NodeList nameNodes = styleElement.getElementsByTagName("w:name");
+                        if (nameNodes.getLength() > 0) {
+                            Element nameElement = (Element) nameNodes.item(0);
+                            currentStyleId = nameElement.getAttribute("w:val");
+                        }
+                    }
+                    
+                    // 如果找到匹配的样式ID，添加到待删除列表
+                    if (currentStyleId != null && styleIds.contains(currentStyleId)) {
+                        nodesToRemove.add(styleNode);
+                        successCount++;
+                    }
+                }
+            }
+            
+            // 删除所有匹配的节点
+            for (Node node : nodesToRemove) {
+                node.getParentNode().removeChild(node);
+            }
+            
+            // 如果有节点被删除，保存更改
+            if (!nodesToRemove.isEmpty()) {
+                // 创建转换器
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                Transformer transformer = transformerFactory.newTransformer();
+                // 设置输出属性，但不使用缩进，避免插入过多空格
+                transformer.setOutputProperty(OutputKeys.INDENT, "no");
+                
+                // 保存文档
+                DOMSource source = new DOMSource(doc);
+                StreamResult result = new StreamResult(stylesFile);
+                transformer.transform(source, result);
+            }
+            
+            return successCount;
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Failed to remove styles: " + e.getMessage());
+            // 如果在删除过程中发生异常，但已经成功删除了一些样式，仍然返回成功删除的数量
+            // 这样UI可以显示部分成功的信息
+            return successCount;
+        }
     }
 }

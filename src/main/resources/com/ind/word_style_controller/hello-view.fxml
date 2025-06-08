@@ -9,7 +9,7 @@
     
     <!-- 顶部标题栏 -->
     <top>
-        <Label styleClass="announcementBar" text="Word Style Controller - 样式管理系统">
+        <Label styleClass="announcementBar" text="Word Style Controller - 样式管理系统" textFill="WHITE">
             <font>
                 <Font name="Microsoft YaHei" size="16.0" />
             </font>
@@ -101,6 +101,15 @@
                         </padding>
                         
                         <Button fx:id="injectToDocx" text="应用样式到文档" onAction="#injectToDocx" styleClass="button success">
+                            <font>
+                                <Font name="Microsoft YaHei" size="14.0" />
+                            </font>
+                            <padding>
+                                <Insets top="12" right="30" bottom="12" left="30" />
+                            </padding>
+                        </Button>
+                        
+                        <Button fx:id="removeStyleButton" text="删除选中样式" onAction="#removeSelectedStyle" styleClass="button danger">
                             <font>
                                 <Font name="Microsoft YaHei" size="14.0" />
                             </font>

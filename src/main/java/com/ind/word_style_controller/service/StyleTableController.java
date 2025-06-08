@@ -182,4 +182,79 @@ public class StyleTableController {
     public ObservableList<StyleModel> getStyleData() {
         return styleData;
     }
+    
+    /**
+     * 根据样式ID从表格中删除行
+     * @param styleId 要删除的样式ID
+     * @return 是否删除成功
+     */
+    public boolean removeStyleById(String styleId) {
+        if (styleId == null || styleId.isEmpty()) {
+            return false;
+        }
+        
+        // 查找匹配ID的样式
+        StyleModel styleToRemove = null;
+        for (StyleModel style : styleData) {
+            if (styleId.equals(style.getId())) {
+                styleToRemove = style;
+                break;
+            }
+        }
+        
+        // 如果找到了匹配的样式，从表格数据中删除
+        if (styleToRemove != null) {
+            return styleData.remove(styleToRemove);
+        }
+        
+        return false;
+    }
+    
+    /**
+     * 批量删除多个样式
+     * @param styles 要删除的样式列表
+     * @return 成功删除的样式数量
+     */
+    public int removeStyles(java.util.List<StyleModel> styles) {
+        if (styles == null || styles.isEmpty()) {
+            return 0;
+        }
+        
+        int successCount = 0;
+        // 创建要删除的样式ID列表
+        java.util.List<String> styleIdsToRemove = new java.util.ArrayList<>();
+        for (StyleModel style : styles) {
+            styleIdsToRemove.add(style.getId());
+        }
+        
+        // 创建要删除的样式对象列表
+        java.util.List<StyleModel> stylesToRemove = new java.util.ArrayList<>();
+        for (StyleModel style : styleData) {
+            if (styleIdsToRemove.contains(style.getId())) {
+                stylesToRemove.add(style);
+                successCount++;
+            }
+        }
+        
+        // 从数据集合中删除样式
+        styleData.removeAll(stylesToRemove);
+        
+        return successCount;
+    }
+    
+    /**
+     * 获取当前选中的样式
+     * @return 选中的样式，如果没有选中则返回null
+     */
+    public StyleModel getSelectedStyle() {
+        return styleTable.getSelectionModel().getSelectedItem();
+    }
+    
+    /**
+     * 获取所有选中的样式
+     * @return 选中的样式列表
+     */
+    public ObservableList<StyleModel> getSelectedStyles() {
+        return styleTable.getSelectionModel().getSelectedItems();
+    }
 }

@@ -1,5 +1,7 @@
 package com.ind.word_style_controller.controller;
+
 import com.ind.StyleModel;
+import com.ind.word_style_controller.controller.MainController;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -14,6 +16,8 @@ public class HelloController {
     public ListView<String> menuList;
     @FXML
     public Button injectToDocx;
+    @FXML
+    public Button removeStyleButton;
     @FXML
     private TableView<StyleModel> styleTable;
     
@@ -30,6 +34,7 @@ public class HelloController {
         // 设置主控制器的UI组件引用
         mainController.menuList = this.menuList;
         mainController.injectToDocx = this.injectToDocx;
+        mainController.removeStyleButton = this.removeStyleButton;
         mainController.styleTable = this.styleTable;
         
         // 初始化主控制器
@@ -42,5 +47,13 @@ public class HelloController {
     @FXML
     public void injectToDocx() {
         mainController.injectToDocx();
+    }
+    
+    /**
+     * 删除选中的样式
+     */
+    @FXML
+    public void removeSelectedStyle() {
+        mainController.removeSelectedStyle();
     }
 }
