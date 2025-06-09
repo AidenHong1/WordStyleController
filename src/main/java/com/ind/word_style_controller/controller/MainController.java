@@ -6,6 +6,7 @@ import com.ind.word_style_controller.service.FileWatcherService;
 import com.ind.word_style_controller.service.StyleApplicatorService;
 import com.ind.word_style_controller.service.StyleLoaderService;
 import com.ind.word_style_controller.service.StyleTableController;
+import com.ind.word_style_controller.service.RemoveStyleService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -42,6 +43,7 @@ public class MainController {
     private StyleLoaderService styleLoaderService;
     private FileWatcherService fileWatcherService;
     private StyleApplicatorService styleApplicatorService;
+    private RemoveStyleService removeStyleService;
     
     /**
      * 初始化控制器
@@ -64,6 +66,7 @@ public class MainController {
         styleTableController = new StyleTableController(styleTable);
         styleLoaderService = new StyleLoaderService();
         styleApplicatorService = new StyleApplicatorService();
+        removeStyleService = new RemoveStyleService(styleLoaderService, styleTableController);
         
         // 初始化表格
         styleTableController.initializeTable();
@@ -176,80 +179,11 @@ public class MainController {
      */
     @FXML
     public void removeSelectedStyle() {
-        // 获取所有选中的样式
-        javafx.collections.ObservableList<StyleModel> selectedStyles = styleTableController.getSelectedStyles();
-
-        if (selectedStyles == null || selectedStyles.isEmpty()) {
-            // 如果没有选中任何样式，显示警告
-            javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
-            alert.setTitle("警告");
-            alert.setHeaderText(null);
-            alert.setContentText("请先选择要删除的样式！");
-            alert.showAndWait();
-            return;
-        }
-
-        // 构建确认消息
-        String confirmMessage;
-        if (selectedStyles.size() == 1) {
-            confirmMessage = "确定要删除样式 \"" + selectedStyles.get(0).getName() + "\" 吗？此操作不可撤销。";
-        } else {
-            confirmMessage = "确定要删除选中的 " + selectedStyles.size() + " 个样式吗？此操作不可撤销。";
-        }
-
-        // 确认删除
-        javafx.scene.control.Alert confirmAlert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("确认删除");
-        confirmAlert.setHeaderText(null);
-        confirmAlert.setContentText(confirmMessage);
-
-        // 显示确认对话框并等待用户响应
-        java.util.Optional<javafx.scene.control.ButtonType> result = confirmAlert.showAndWait();
-
-        // 如果用户确认删除
-        if (result.isPresent() && result.get() == javafx.scene.control.ButtonType.OK) {
-            // 收集所有样式ID
-            java.util.List<String> styleIds = new java.util.ArrayList<>();
-            for (StyleModel style : selectedStyles) {
-                styleIds.add(style.getId());
-            }
-
-            // 从XML文件中批量删除样式
-            int xmlRemovedCount = styleLoaderService.removeStylesByIds(styleIds);
-
-            // 从表格中批量删除样式
-            int tableRemovedCount = styleTableController.removeStylesByIds(styleIds);
-
-            // 删除后清空表格选中，防止死循环
-            styleTable.getSelectionModel().clearSelection();
-
-            System.out.print("Removed " + tableRemovedCount + " styles from the table, " + xmlRemovedCount + " styles from XML.");
-            // 更新样式计数标签
-            updateStyleCountLabel();
-            
-            // 显示操作结果
-            if (tableRemovedCount > 0) {
-                javafx.scene.control.Alert successAlert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-                successAlert.setTitle("成功");
-                successAlert.setHeaderText(null);
-
-                if (xmlRemovedCount == tableRemovedCount) {
-                    successAlert.setContentText("已成功删除 " + xmlRemovedCount + " 个样式！");
-                } else if (xmlRemovedCount > tableRemovedCount) {
-                    successAlert.setContentText("已删除 " + tableRemovedCount + " 个样式，但其中有 " + xmlRemovedCount + " 个样式从XML文件中删除成功。可能是由于自定义样式的id一致所导致的");
-                } else {
-                    successAlert.setContentText("已从表格中删除 " + tableRemovedCount + " 个样式，但无法从XML文件中删除。请检查文件权限或格式。");
-                }
-
-                successAlert.showAndWait();
-            } else {
-                javafx.scene.control.Alert errorAlert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-                errorAlert.setTitle("错误");
-                errorAlert.setHeaderText(null);
-                errorAlert.setContentText("删除样式时出现错误！无法从表格中删除样式。");
-                errorAlert.showAndWait();
-            }
-        }
+        removeStyleService.removeSelectedStyle(
+            styleTableController.getSelectedStyles(),
+            styleTable,
+            this::updateStyleCountLabel
+        );
     }
     
     /**

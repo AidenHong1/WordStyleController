@@ -1,29 +1,17 @@
 package com.ind.word_style_controller.service;
 
 import com.ind.StyleModel;
-import com.ind.word_style_controller.utils.CommonUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.paint.Color;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+
 
 /**
  * 样式加载服务
@@ -227,101 +215,8 @@ public class StyleLoaderService {
                 }
             }
         }
-        
         // 创建并返回样式模型对象
         return new StyleModel(styleId, styleName, font, type, color, fontSize, alignment, paragraphSpacing, lineSpacing, paragraphBeforeSpacing);
     }
     
-    /**
-     * 批量删除多个样式
-     * @param styleIds 要删除的样式ID列表
-     * @return 成功删除的样式数量
-     */
-    public int removeStylesByIds(List<String> styleIds) {
-        if (styleIds == null || styleIds.isEmpty()) {
-            return 0;
-        }
-        
-        int successCount = 0;
-        
-        try {
-            // 获取styles.xml文件
-            File stylesFile = new File(stylesXmlPath);
-            if (!stylesFile.exists()) {
-                throw new IOException("styles.xml not found at " + stylesXmlPath);
-            }
-            
-            // 解析XML文档
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(stylesFile);
-            doc.getDocumentElement().normalize();
-            
-            // 查找所有xml-fragment元素
-            NodeList styleNodes = doc.getElementsByTagName("xml-fragment");
-            java.util.List<Node> nodesToRemove = new java.util.ArrayList<>();
-            
-            // 遍历所有样式节点，找出需要删除的节点
-            for (int i = 0; i < styleNodes.getLength(); i++) {
-                Node styleNode = styleNodes.item(i);
-                if (styleNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element styleElement = (Element) styleNode;
-                    
-                    // 获取样式ID
-                    String currentStyleId = null;
-                    
-                    // 检查w:link元素
-                    if (currentStyleId == null || currentStyleId.isEmpty()) {
-                        NodeList linkNodes = styleElement.getElementsByTagName("w:link");
-                        if (linkNodes.getLength() > 0) {
-                            Element linkElement = (Element) linkNodes.item(0);
-                            currentStyleId = linkElement.getAttribute("w:val");
-                        }
-                    }
-                    
-                    // 如果仍然没有找到ID，检查w:name元素
-                    if (currentStyleId == null || currentStyleId.isEmpty()) {
-                        NodeList nameNodes = styleElement.getElementsByTagName("w:name");
-                        if (nameNodes.getLength() > 0) {
-                            Element nameElement = (Element) nameNodes.item(0);
-                            currentStyleId = nameElement.getAttribute("w:val");
-                        }
-                    }
-                    
-                    // 如果找到匹配的样式ID，添加到待删除列表
-                    if (currentStyleId != null && styleIds.contains(currentStyleId)) {
-                        nodesToRemove.add(styleNode);
-                        successCount++;
-                    }
-                }
-            }
-            
-            // 删除所有匹配的节点
-            for (Node node : nodesToRemove) {
-                node.getParentNode().removeChild(node);
-            }
-            
-            // 如果有节点被删除，保存更改
-            if (!nodesToRemove.isEmpty()) {
-                // 创建转换器
-                TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                Transformer transformer = transformerFactory.newTransformer();
-                // 设置输出属性，但不使用缩进，避免插入过多空格
-                transformer.setOutputProperty(OutputKeys.INDENT, "no");
-                
-                // 保存文档
-                DOMSource source = new DOMSource(doc);
-                StreamResult result = new StreamResult(stylesFile);
-                transformer.transform(source, result);
-            }
-            
-            return successCount;
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Failed to remove styles: " + e.getMessage());
-            // 如果在删除过程中发生异常，但已经成功删除了一些样式，仍然返回成功删除的数量
-            // 这样UI可以显示部分成功的信息
-            return successCount;
-        }
-    }
 }

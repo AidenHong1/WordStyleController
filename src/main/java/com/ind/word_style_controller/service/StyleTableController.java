@@ -209,18 +209,7 @@ public class StyleTableController {
         
         return false;
     }
-
-    /**
-     * 根据 id 列表批量删除样式
-     * @param ids 样式 id 列表
-     * @return 实际删除的数量
-     */
-    public int removeStylesByIds(java.util.List<String> ids) {
-        if (ids == null || ids.isEmpty()) return 0;
-        java.util.Set<String> idSet = new java.util.HashSet<>(ids);
-        styleData.removeIf(item -> idSet.contains(item.getId()));
-        return ids.size();
-    }
+    // 已迁移到 RemoveStyleService 的批量删除方法已删除
     
     /**
      * 获取当前选中的样式
