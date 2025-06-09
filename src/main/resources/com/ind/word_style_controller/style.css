@@ -1,71 +1,280 @@
-.announcementBar{
-    -fx-text-fill: #FFFFFF;
-    -fx-height: 50px;
-    -fx-background-color: #53565C;
+/* 现代化配色方案 */
+.root {
+    -fx-font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    -fx-background-color: #f8f9fa;
+}
+
+/* 顶部公告栏 - 现代渐变设计 */
+.announcementBar {
+    -fx-text-fill: white !important;
+    -fx-height: 60px;
+    -fx-background-color: linear-gradient(to right, #667eea 0%, #764ba2 100%);
     -fx-padding: 20px;
     -fx-alignment: center;
-    -fx-font-size: 15px;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 2);
 }
-.mainContent{
+
+/* 主内容区域 */
+.mainContent {
+    -fx-background-color: #f8f9fa;
 }
-#menuList:{
-    -fx-cell-faint-focus-border-color: transparent;
+
+/* 侧边菜单列表 - 现代卡片风格 */
+#menuList {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 0 1px 0 0;
+    -fx-cell-size: 50px;
+    -fx-pref-width: 140px;
+    -fx-max-width: 140px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 5, 0, 2, 0);
+}
+
+#menuList .list-cell {
     -fx-background-color: transparent;
-    -fx-focus-color: transparent;
-    -fx-cell-focus-color: transparent;
-    -fx-cell-focus-border-color: transparent;
-    -fx-pref-width: 120px;
-    -fx-max-width: 100px;
+    -fx-border-color: transparent;
+    -fx-text-fill: #495057;
+    -fx-font-size: 14px;
+    -fx-padding: 12px 16px;
+    -fx-alignment: center-left;
 }
-#menuList:selected{
-    -fx-cell-faint-focus-border-color: transparent;
-    -fx-background-color: transparent;
-    -fx-focus-color: transparent;
-    -fx-cell-focus-color: transparent;
-    -fx-cell-focus-border-color: transparent;
-    -fx-pref-width: 100px;
+
+#menuList .list-cell:selected {
+    -fx-background-color: linear-gradient(to right, #667eea, #764ba2);
+    -fx-text-fill: white;
+    -fx-background-radius: 8px;
+    -fx-background-insets: 2px;
 }
-#menuList:focused{
-    -fx-cell-faint-focus-border-color: transparent;
-    -fx-background-color: transparent;
-    -fx-focus-color: transparent;
-    -fx-cell-focus-color: transparent;
-    -fx-cell-focus-border-color: transparent;
-    -fx-pref-width: 100px;
+
+#menuList .list-cell:hover {
+    -fx-background-color: #e9ecef;
+    -fx-background-radius: 8px;
+    -fx-background-insets: 2px;
 }
-#styleList:focused{
-    -fx-cell-faint-focus-border-color: transparent;
-    -fx-background-color: transparent;
-    -fx-focus-color: transparent;
-    -fx-cell-focus-color: transparent;
-    -fx-cell-focus-border-color: transparent;
+
+/* 样式列表 */
+#styleList {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
     -fx-pref-width: 200px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
 }
-#styleList:selected{
-    -fx-cell-faint-focus-border-color: transparent;
+
+#styleList .list-cell {
     -fx-background-color: transparent;
-    -fx-focus-color: transparent;
-    -fx-cell-focus-color: transparent;
-    -fx-cell-focus-border-color: transparent;
-    -fx-pref-width: 200px;
+    -fx-text-fill: #495057;
+    -fx-padding: 10px 15px;
+    -fx-border-color: transparent;
 }
-#styleList{
-    -fx-cell-faint-focus-border-color: transparent;
-    -fx-background-color: transparent;
-    -fx-focus-color: transparent;
-    -fx-cell-focus-border-color: transparent;
-    -fx-pref-width: 200px;
+
+#styleList .list-cell:selected {
+    -fx-background-color: #667eea;
+    -fx-text-fill: white;
+    -fx-background-radius: 6px;
+    -fx-background-insets: 1px;
 }
-#functionArea{
-    -fx-background-color:#F1F3F4;
+
+#styleList .list-cell:hover {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 6px;
+    -fx-background-insets: 1px;
 }
-#styleAndButton{
-    -fx-padding: 20px 60px;
+
+/* 功能区域 */
+#functionArea {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 0 0 0 1px;
 }
-#styleListTitle{
-    -fx-font-size: 20px;
+
+#styleAndButton {
+    -fx-padding: 30px 40px;
+    -fx-spacing: 25px;
 }
-#stylesContainer label{
+
+/* 标题样式 */
+#styleListTitle {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #343a40;
+}
+
+/* 表格样式 */
+.table-view {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1px;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 3);
+}
+
+.table-view .column-header {
+    -fx-background-color: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+    -fx-text-fill: #495057;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-border-color: #dee2e6;
+    -fx-padding: 12px 8px;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: #495057;
+    -fx-font-size: 13px;
+    -fx-padding: 10px 8px;
+    -fx-border-color: #f1f3f4;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: rgba(102, 126, 234, 0.1);
+    -fx-text-fill: #495057;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+/* 现代按钮样式 */
+.button {
+    -fx-background-color: linear-gradient(to bottom, #667eea, #764ba2);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 6, 0, 0, 2);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #5a6fd8, #6a42a0);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 8, 0, 0, 3);
+    -fx-scale-y: 1.02;
+    -fx-scale-x: 1.02;
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #4e5bc6, #5d3a8e);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 4, 0, 0, 1);
+    -fx-scale-y: 0.98;
+    -fx-scale-x: 0.98;
+}
+
+/* 成功按钮 */
+.button.success {
+    -fx-background-color: linear-gradient(to bottom, #28a745, #20c997);
+}
+
+.button.success:hover {
+    -fx-background-color: linear-gradient(to bottom, #218838, #1ba085);
+}
+
+/* 危险按钮 */
+.button.danger {
+    -fx-background-color: linear-gradient(to bottom, #dc3545, #c82333);
+}
+
+.button.danger:hover {
+    -fx-background-color: linear-gradient(to bottom, #c82333, #bd2130);
+}
+
+/* 信息按钮 */
+.button.info {
+    -fx-background-color: linear-gradient(to bottom, #17a2b8, #6f42c1);
+}
+
+.button.info:hover {
+    -fx-background-color: linear-gradient(to bottom, #138496, #5a32a3);
+}
+
+/* 文本框样式 */
+.text-field {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ced4da;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+    -fx-padding: 10px 12px;
+    -fx-font-size: 14px;
+    -fx-text-fill: #495057;
+}
+
+.text-field:focused {
+    -fx-border-color: #667eea;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(102, 126, 234, 0.3), 6, 0, 0, 0);
+}
+
+/* 标签样式 */
+.label {
+    -fx-text-fill: #495057;
+    -fx-font-size: 14px;
+}
+
+.title-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #343a40;
+}
+
+/* 容器样式 */
+#stylesContainer {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0, 0, 2);
+}
+
+#stylesContainer .label {
     -fx-font-size: 15px;
     -fx-alignment: center-left;
+    -fx-text-fill: #495057;
+}
+
+/* 分隔符样式 */
+.separator {
+    -fx-background-color: #dee2e6;
+}
+
+/* 滚动面板样式 */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+/* TitledPane 样式 */
+.titled-pane {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+}
+
+.titled-pane .title {
+    -fx-background-color: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+    -fx-text-fill: #495057;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+    -fx-padding: 12px 16px;
+    -fx-background-radius: 8px 8px 0 0;
+}
+
+.titled-pane .content {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 0 0 8px 8px;
+    -fx-padding: 0;
 }
