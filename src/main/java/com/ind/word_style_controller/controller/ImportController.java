@@ -188,23 +188,21 @@ public class ImportController {
             StringBuilder newStylesContent = new StringBuilder();
             XWPFStyles styles = currentDocument.getStyles();
             int addedStylesCount = 0;
-            
             for (String selectedStyleDisplay : stylesToExport) {
                 // 从显示名称中提取样式ID
                 String styleId = extractStyleId(selectedStyleDisplay);
-                
                 // 检查样式是否已存在
                 if (existingContent.indexOf("w:styleId=\"" + styleId + "\"") != -1) {
                     // 样式已存在，跳过
                     continue;
                 }
-                
                 // 直接通过样式ID获取样式
                 XWPFStyle style = styles.getStyle(styleId);
                 if (style != null) {
                     CTStyle ctStyle = style.getCTStyle();
                     if (ctStyle != null) {
-                        newStylesContent.append(ctStyle.xmlText() + "\n");
+                        // 保证每个样式片段之间只换一次行
+                        newStylesContent.append(ctStyle.xmlText().replaceAll("(\\r?\\n)+", "").trim()).append("\n");
                         addedStylesCount++;
                     }
                 }
@@ -226,17 +224,19 @@ public class ImportController {
                 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
                 Document doc = docBuilder.parse(new InputSource(new StringReader(existingContent.toString())));
-                
                 // 创建转换器
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
                 // 设置输出属性，但不使用缩进，避免插入过多空格
                 transformer.setOutputProperty(OutputKeys.INDENT, "no");
-                
                 // 保存文档
                 DOMSource source = new DOMSource(doc);
                 StreamResult result = new StreamResult(outputFile);
                 transformer.transform(source, result);
+                // 再次处理文件，确保每个样式片段之间只换一次行
+                String xmlContent = new String(java.nio.file.Files.readAllBytes(outputFile.toPath()), java.nio.charset.StandardCharsets.UTF_8);
+                xmlContent = xmlContent.replaceAll("(</xml-fragment>)(\\s*\\r?\\n)+(<xml-fragment)", "$1\n$3");
+                java.nio.file.Files.write(outputFile.toPath(), xmlContent.getBytes(java.nio.charset.StandardCharsets.UTF_8));
             } catch (Exception ex) {
                 // 如果XML转换失败，回退到直接写入方式
                 FileWriter writer = new FileWriter(outputFile);

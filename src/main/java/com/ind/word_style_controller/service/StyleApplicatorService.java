@@ -117,6 +117,10 @@ public class StyleApplicatorService {
                     rFonts.setCs(englishFont);
                     rFonts.setEastAsia(chineseFont);
                     rpr.addNewSz().setVal(BigInteger.valueOf(styleModel.fontSize() * 2));
+                    // 设置粗体
+                    if (styleModel.isBold()) {
+                        rpr.addNewB();
+                    }
                     
                     // 处理颜色
                     String color = styleModel.color();

@@ -82,6 +82,8 @@ public class StyleLoaderService {
      * @return 样式模型对象
      */
     private StyleModel parseStyleElement(Element styleElement) {
+        // 检查粗体属性
+        boolean bold = false;
         // 获取样式类型
         String type = styleElement.getAttribute("w:type");
         
@@ -134,6 +136,11 @@ public class StyleLoaderService {
             }
         }
         
+        // 检查粗体属性
+        NodeList boldNodes = styleElement.getElementsByTagName("w:b");
+        if (boldNodes.getLength() > 0) {
+            bold = true;
+        }
         // 获取颜色信息
         String color = "#000000"; // 默认黑色
         NodeList colorNodes = styleElement.getElementsByTagName("w:color");
@@ -215,8 +222,9 @@ public class StyleLoaderService {
                 }
             }
         }
+        
         // 创建并返回样式模型对象
-        return new StyleModel(styleId, styleName, font, type, color, fontSize, alignment, paragraphSpacing, lineSpacing, paragraphBeforeSpacing);
+        return new StyleModel(styleId, styleName, font, type, color, fontSize, alignment, paragraphSpacing, lineSpacing, paragraphBeforeSpacing, bold);
     }
     
 }
