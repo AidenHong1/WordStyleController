@@ -7,7 +7,7 @@
 - 批量添加、删除、导入、导出样式
 - 通过可视化界面操作，无需手动编辑XML
 - 样式数据以`styles.xml`文件存储，兼容Word格式
-- 备注：目前仅支持对DOCX格式文档进行样式管理，暂不支持DOC格式
+- 备注：目前仅支持对DOCX格式文档进行样式管理，暂不支持DOC格式类型文档
 
 ## 安装与运行
 1. 克隆本项目：
@@ -21,16 +21,17 @@
    ```
 3. 运行JavaFX应用：
    ```bash
+   cd word_style_controller
    ./mvnw javafx:run
    ```
-   或直接运行`run-mvnw-javafx.bat`批处理脚本。
+   或直接运行`quick_boot.bat`批处理脚本。
 
 ## 依赖环境
 - JDK 17 及以上（建议使用OpenJDK或Oracle JDK）
 - 可选：Maven 3.6+（如需源码构建）
 - 可选：JavaFX 17+（如需本地开发，已集成于依赖中）
 
-本项目可直接通过`./mvnw javafx:run`运行，无需单独安装Maven或JavaFX SDK。
+本项目可直接通过双击`quick_boot.bat`直接运行运行，无需单独安装Maven或JavaFX SDK。
 
 ## 目录结构
 ```

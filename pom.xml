@@ -77,9 +77,69 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
         <configuration>
-          <source>17</source>
+          <release>17</release>
           <target>17</target>
+          <proc>none</proc>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.panteleyev</groupId>
+        <artifactId>jpackage-maven-plugin</artifactId>
+        <version>1.6.0</version>
+        <configuration>
+          <name>WordStyleController</name>
+          <appVersion>1.0</appVersion>
+          <vendor>Aiden</vendor>
+          <destination>target/installer</destination>
+          <input>target</input>
+          <mainJar>word_style_controller-1.0-SNAPSHOT.jar</mainJar>
+          <mainClass>com.ind.word_style_controller.HelloApplication</mainClass>
+          <javaOptions>
+            <option>--add-opens</option>
+            <option>org.apache.poi.ooxml/org.apache.poi.xwpf.usermodel=com.ind.word_style_controller</option>
+            <option>--add-opens</option>
+            <option>org.apache.xmlbeans/org.openxmlformats.schemas.wordprocessingml.x2006.main=com.ind.word_style_controller</option>
+            <option>--add-opens</option>
+            <option>java.base/java.lang.reflect=com.ind.word_style_controller</option>
+          </javaOptions>
+          <modulePaths>
+            <modulePath>${java.home}/jmods</modulePath>
+          </modulePaths>
+          <winDirChooser>true</winDirChooser>
+          <winMenu>true</winMenu>
+          <winShortcut>true</winShortcut>
+          <type>EXE</type>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>com.ind.word_style_controller.HelloApplication</mainClass>
+                </transformer>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>org.openjfx</groupId>
