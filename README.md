@@ -40,6 +40,7 @@
 ├── LICENSE               # MIT开源协议
 ├── README.md             # 项目说明文档
 ├── pom.xml               # Maven构建文件
+├── quick_boot.bat        # 一键编译运行脚本
 ```
 
 ## 未来计划
